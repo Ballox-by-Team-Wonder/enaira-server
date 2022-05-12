@@ -5,14 +5,16 @@ async function auth (req, res, next) {
     try {
         const token = req.headers.authorization.split(" ")[1]
 
-        const decodedData = jwt.decode(token)
-        
-        req.userId = decodedData?.sub
+        if (token) {
+            const decodedData = jwt.verify(token, process.env.JWT_SIGNATURE)
+            req.userID = decodedData?.id
+
+            console.log(decodedData)
+        }
 
         next()
 
     } catch (error) {
-        
         return res.status(401).json({ message: "Unauthorized" })
     }
 }

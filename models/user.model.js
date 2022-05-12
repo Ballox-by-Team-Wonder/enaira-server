@@ -7,7 +7,10 @@ const userSchema = new Schema({
     email: { type: String, required: true, unique: true},
     imageUrl: { type: String },
     password: { type: String, required: true },
-    memories: { type: [String], default: [] },
+    memories: [{
+        type: Schema.Types.ObjectId,
+        ref: "Memory"
+    }],
 }, {
     timestamps: true,
 })
