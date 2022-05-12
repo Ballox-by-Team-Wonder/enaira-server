@@ -5,7 +5,8 @@ async function saveMemory(req, res) {
     const { file } = req
     
     try {
-        const result = await Memory.create({ place, description, imageUrl: file.filename, user: req.userID })
+        let result = await Memory.create({ place, description, imageUrl: file.filename, user: req.userID })
+        result = await result.populate("user")
         res.status(201).json(result)
 
     } catch (err) {
@@ -14,6 +15,17 @@ async function saveMemory(req, res) {
 
 }
 
+async function getMemories(req, res) {
+    try {
+        const result = await Memory.find({}).populate("user")
+        res.status(200).json(result)
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
-    saveMemory
+    saveMemory,
+    getMemories
 }
