@@ -51,7 +51,22 @@ async function login(req, res) {
 }
 
 
+async function getLoggedInUser(req, res) {
+    try {
+        const result = await User.findById(req.userID)
+        
+        if (!result) return res.status(404).json({ message: "user not found" })
+
+        res.status(200).json(result)
+        
+    } catch (err) {
+        return res.status(500).json({ message: "something went wrong" })
+    }
+}
+
+
 module.exports = {
     signup,
-    login
+    login,
+    getLoggedInUser
 }
