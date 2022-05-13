@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet')
 const userRouter = require('./routes/user.route')
 const memoryRouter = require('./routes/memory.route')
+const commentRouter = require('./routes/comment.route')
 
 require('dotenv').config()
 
@@ -25,5 +26,6 @@ app.use('/images/', express.static('./images'));
  */
 app.use('/api/user', userRouter)
 app.use('/api/memory', memoryRouter)
+app.use('/api/comment', commentRouter)
 
 module.exports = app
