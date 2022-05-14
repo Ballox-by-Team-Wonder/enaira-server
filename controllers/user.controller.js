@@ -1,6 +1,9 @@
 const User = require('../models/user.model')
+const Token = require('../models/token.model')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
+const { sendMail } = require('../services/sendMail')
 
 
 async function signup(req, res) {
@@ -11,7 +14,7 @@ async function signup(req, res) {
 
         if(existingUser) return res.status(400).json({ message: "User already exists"})
 
-        if(password !== confirmPassword) return res.status(400).json({ message: "Passwords do not match"})
+        if(password !== confirmPassword) return res.status(400).json({ message: "Passwords do not match" })
 
         const hashedPassword = await bcrypt.hash(password, 12)
 
@@ -65,8 +68,30 @@ async function getLoggedInUser(req, res) {
 }
 
 
+async function requestPasswordReset(req, res) {
+    const { email } = req.body
+    try {
+        const user = await User.findOne({ email })
+        if (!user) return res.status(404).json({ message: "User does not exist" })
+        const token = await Token.findOne({ user: user._id })
+        if (token) await token.deleteOne()
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const hashedToken = await bcrypt.hash(resetToken, 12)
+        await Token.create({ token: hashedToken, user: user, createdAt: Date.now() })
+        const resetLink = `https://samuel-travel-memories.netlify.app/password-reset?token=${resetToken}&user=${user._id}`
+        sendMail(user.email, "Password Reset Request", { name: user.name, link: resetLink }, "../utils/templates/resetPasswordRequest.handlebars");
+        res.status(200).json({ result: 'success' });
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "something went wrong" })
+    }
+}
+
+
 module.exports = {
     signup,
     login,
-    getLoggedInUser
+    getLoggedInUser,
+    requestPasswordReset,
 }
