@@ -68,7 +68,7 @@ async function getLoggedInUser(req, res) {
 }
 
 
-async function requestPasswordReset(req, res) {
+async function forgotPassword(req, res) {
     const { email } = req.body
     try {
         const user = await User.findOne({ email })
@@ -78,7 +78,7 @@ async function requestPasswordReset(req, res) {
         const resetToken = crypto.randomBytes(32).toString("hex");
         const hashedToken = await bcrypt.hash(resetToken, 12)
         await Token.create({ token: hashedToken, user: user, createdAt: Date.now() })
-        const resetLink = `https://samuel-travel-memories.netlify.app/password-reset?token=${resetToken}&user=${user._id}`
+        const resetLink = `https://samuel-travel-memories.netlify.app/reset-password?token=${resetToken}&userID=${user._id}`
         sendMail(user.email, "Password Reset Request", { name: user.name, link: resetLink }, "../utils/templates/resetPasswordRequest.handlebars");
         res.status(200).json({ result: 'success' });
 
@@ -89,9 +89,30 @@ async function requestPasswordReset(req, res) {
 }
 
 
+async function resetPassword(req, res) {
+    const { token, userID, password } = req.body
+
+    try {
+        const passwordResetToken = await Token.findOne({ user: userID.toString() })
+        if (!passwordResetToken) return res.status(404).json({ message: "Invalid or expired token" })
+        const isValidToken = await bcrypt.compare(token, passwordResetToken.token)
+        if (!isValidToken) return res.status(400).json({ message: "Token is invalid" })
+        const hashedPassword = await bcrypt.hash(password, 12)
+        await User.findOneAndUpdate({ _id: userID }, { password: hashedPassword })
+        await passwordResetToken.deleteOne();
+        res.status(200).json({ result: 'successfully changed password'})
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: 'your request could not be processed' })
+    }
+}
+
+
 module.exports = {
     signup,
     login,
     getLoggedInUser,
-    requestPasswordReset,
+    forgotPassword,
+    resetPassword
 }

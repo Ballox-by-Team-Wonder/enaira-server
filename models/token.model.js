@@ -17,8 +17,6 @@ const tokenSchema = new Schema({
         default: Date.now,
         expires: 3600, 
     },
-}, {
-    timestamps: true,
 })
 
 const Token = mongoose.model('Token', tokenSchema)
