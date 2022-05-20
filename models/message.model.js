@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema;
 
-const commentSchema = new Schema({
+const messageSchema = new Schema({
     body: { type: String },
     memory: {
         type: Schema.Types.ObjectId,
@@ -16,6 +16,6 @@ const commentSchema = new Schema({
     timestamps: true,
 })
 
-const Comment = mongoose.model('Comment', commentSchema)
+const Message = mongoose.model('Message', messageSchema)
 
-module.exports = Comment;
+module.exports = Message;

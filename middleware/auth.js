@@ -9,7 +9,7 @@ async function auth (req, res, next) {
             const decodedData = jwt.verify(token, process.env.JWT_SIGNATURE)
             req.userID = decodedData?.id
 
-            console.log(decodedData)
+            // console.log(decodedData)
         }
 
         next()
