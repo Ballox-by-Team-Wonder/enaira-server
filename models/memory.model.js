@@ -4,17 +4,16 @@ const Schema = mongoose.Schema;
 
 const memorySchema = new Schema({
     title: { type: String },
-    place: { type: String },
-    description: { type: String },
+    experience: { type: String },
     imageUrl: { type: String },
     public: { type: Boolean, required: true },
     user: {
         type: Schema.Types.ObjectId,
         ref: "User"
     },
-    comments: [{
+    authorized: [{
         type: Schema.Types.ObjectId,
-        ref: "Comment"
+        ref: "User"
     }]
 }, {
     timestamps: true,
