@@ -6,7 +6,7 @@ const memorySchema = new Schema({
     title: { type: String },
     experience: { type: String },
     imageUrl: { type: String },
-    public: { type: Boolean, required: true },
+    isPublic: { type: Boolean, required: true },
     user: {
         type: Schema.Types.ObjectId,
         ref: "User"

@@ -5,6 +5,7 @@ const socketIo = require("socket.io");
 
 const PORT = process.env.PORT || 5000
 const MONGO_DB_CONNECTION_URL = process.env.MONGO_DB_CONNECTION_URL
+const NODE_ENV = process.env.NODE_ENV
 
 mongoose.connection.once('open', () => console.log('Mongo DB is connected!'))
 mongoose.connection.on('error', (error) => console.log('Mongo DB error: ' + error))
@@ -18,7 +19,7 @@ const server = http.createServer(app)
 
 const io = socketIo(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' 
+      origin: NODE_ENV === 'production' 
         ? "https://samuel-travel-memories.netlify.app"
         : "localhost:3000",
       methods: ["GET", "POST"],
@@ -26,10 +27,10 @@ const io = socketIo(server, {
     }
 });
 
-const getApiAndEmit = socket => {
-    const response = new Date();
-    socket.emit("FromAPI", response);
-};
+// const getApiAndEmit = socket => {
+//     const response = new Date();
+//     socket.emit("FromAPI", response);
+// };
   
 
 io.on('connection', (socket) => {

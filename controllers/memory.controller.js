@@ -1,11 +1,11 @@
 const Memory = require('../models/memory.model')
 
 async function saveMemory(req, res) {
-    const { title, experience, public } = req.body
+    const { title, experience, isPublic } = req.body
     const { file } = req
     
     try {
-        let result = await Memory.create({ title, experience, imageUrl: file.filename, public, user: req.userID, authorized: req.userID })
+        let result = await Memory.create({ title, experience, imageUrl: file.filename, isPublic, user: req.userID, authorized: req.userID })
         result = await result.populate("user")
         res.status(201).json(result)
 
