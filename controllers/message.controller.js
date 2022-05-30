@@ -1,5 +1,14 @@
 const Message = require('../models/message.model')
 
+async function getAllMessages(req, res) {
+    try {
+        const result = await Message.find()
+        res.status(200).json(result)
+    } catch (err) {
+        res.status(500).json({ message: 'something went wrong' })
+    }
+}
+
 async function createMessage(req, res) {
     const { 
         userID, 
@@ -31,6 +40,7 @@ async function getMessagesForMemory(req, res) {
 }
 
 module.exports = {
+    getAllMessages,
     createMessage,
     getMessagesForMemory
 }

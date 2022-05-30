@@ -24,8 +24,7 @@ async function sendMail(email, subject, payload, template) {
     };
 
     // Send email
-    const result = await transporter.sendMail(options);
-    console.log(result.response)
+    await transporter.sendMail(options);
 
   } catch (error) {
     console.log(error)

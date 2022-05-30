@@ -100,7 +100,7 @@ async function resetPassword(req, res) {
         const hashedPassword = await bcrypt.hash(password, 12)
         await User.findOneAndUpdate({ _id: userID }, { password: hashedPassword })
         await passwordResetToken.deleteOne();
-        res.status(200).json({ result: 'successfully changed password'})
+        res.status(200).json({ result: 'successfully changed password' })
 
     } catch (err) {
         console.log(err)
