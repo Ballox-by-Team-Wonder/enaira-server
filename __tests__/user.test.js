@@ -1,6 +1,6 @@
 const supertest = require("supertest");
 const app = require('../app')
-const { mongoConnect, mongoDisconnect } = require("../services/mongo");
+const { mongoConnect, mongoDisconnect } = require("../services/mongo.service");
 const { getTestUser } = require("../utils/testUtils/auth.util");
 
 

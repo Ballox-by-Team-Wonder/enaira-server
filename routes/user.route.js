@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { login, signup, getLoggedInUser, forgotPassword, resetPassword, loginWithGoogle } = require('../controllers/user.controller');
-const { auth } = require('../middleware/auth')
+const { auth } = require('../middleware/auth.middleware')
 
 router.post('/signup', signup)
 router.post('/login', login)

@@ -2,7 +2,7 @@ const User = require('../models/user.model')
 const Token = require('../models/token.model')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
-const { sendMail } = require('../services/sendMail')
+const { sendMail } = require('../services/sendMail.service')
 const { OAuth2Client } = require('google-auth-library');
 const jwtDecode = require("jwt-decode");
 const { signJwtToken } = require('../services/auth.service');
@@ -60,7 +60,7 @@ async function getLoggedInUser(req, res) {
 
 async function forgotPassword(req, res) {
     const { email } = req.body
-    
+
     try {
         const user = await User.findOne({ email })
         if (!user) return res.status(404).json({ message: "User does not exist" })
