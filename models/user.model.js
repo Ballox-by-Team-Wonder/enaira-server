@@ -6,7 +6,7 @@ const userSchema = new Schema({
     name: { type: String, required: true, trim: true, minlength: 3 },
     email: { type: String, required: true, unique: true},
     imageUrl: { type: String },
-    password: { type: String, required: true },
+    password: { type: String },
     memories: [{
         type: Schema.Types.ObjectId,
         ref: "Memory"

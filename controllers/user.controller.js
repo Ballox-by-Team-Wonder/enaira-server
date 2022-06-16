@@ -1,27 +1,25 @@
 const User = require('../models/user.model')
 const Token = require('../models/token.model')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const { sendMail } = require('../services/sendMail')
+const { OAuth2Client } = require('google-auth-library');
+const jwtDecode = require("jwt-decode");
+const { signJwtToken } = require('../services/auth.service');
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 
 async function signup(req, res) {
     const { name, email, password, confirmPassword } = req.body
 
     try {
         const existingUser = await User.findOne({ email })
-
         if(existingUser) return res.status(400).json({ message: "User already exists"})
-
         if(password !== confirmPassword) return res.status(400).json({ message: "Passwords do not match" })
-
         const hashedPassword = await bcrypt.hash(password, 12)
-
         const result = await User.create({ name, email, imageUrl: '', password: hashedPassword })
-
-        const token = jwt.sign({ email: result.email, id: result._id }, process.env.JWT_SIGNATURE, { expiresIn: "24h" })
-
+        const token = signJwtToken(result._id, result.email)
         res.status(201).json({ result, token })
 
     } catch (error) {
@@ -32,20 +30,14 @@ async function signup(req, res) {
 
 
 async function login(req, res) {
-
     const { email, password } = req.body
 
     try {
         const existingUser = await User.findOne({ email })
-
         if(!existingUser) return res.status(404).json({ message: "User isn't registered" })
-
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password)
-
         if(!isPasswordCorrect) return res.status(400).json({ message: "Invalid Credentials"})
-
-        const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, process.env.JWT_SIGNATURE, { expiresIn: "24h" })
-
+        const token = signJwtToken(existingUser._id, existingUser.email)
         res.status(200).json({ result: existingUser, token })
 
     } catch (error) {
@@ -57,9 +49,7 @@ async function login(req, res) {
 async function getLoggedInUser(req, res) {
     try {
         const result = await User.findById(req.userID)
-        
         if (!result) return res.status(404).json({ message: "user not found" })
-
         res.status(200).json(result)
         
     } catch (err) {
@@ -70,6 +60,7 @@ async function getLoggedInUser(req, res) {
 
 async function forgotPassword(req, res) {
     const { email } = req.body
+    
     try {
         const user = await User.findOne({ email })
         if (!user) return res.status(404).json({ message: "User does not exist" })
@@ -109,10 +100,36 @@ async function resetPassword(req, res) {
 }
 
 
+async function loginWithGoogle(req, res) {
+    const { code } = req.body
+    const oAuth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, 'postmessage')
+
+    try {
+        const { tokens } = await oAuth2Client.getToken(code)
+        const { name, email } = jwtDecode(tokens.id_token)
+
+        const existingUser = await User.findOne({ email })
+
+        if (existingUser) {
+            const token = signJwtToken(existingUser._id, existingUser.email)
+            return res.status(200).json({ result: existingUser, token })
+        } else {
+            const result = await User.create({ name, email })
+            const token = signJwtToken(result._id, result.email)
+            return res.status(201).json({ result, token })
+        }    
+    } catch(err) {
+        console.log(err)
+        res.status(500).json({ message: 'Server error' })
+    }
+}
+
+
 module.exports = {
     signup,
     login,
     getLoggedInUser,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    loginWithGoogle
 }
