@@ -8,7 +8,7 @@ function liveSocket(server) {
         cors: {
             origin: NODE_ENV === 'production' 
                 ? "https://samuel-travel-memories.netlify.app"
-                : "localhost:3000",
+                : "http://localhost:3000",
             methods: ["GET", "POST"],
             credentials: true
         }
