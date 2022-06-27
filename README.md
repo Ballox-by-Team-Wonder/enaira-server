@@ -1,4 +1,4 @@
-# Travel Memories
+# Travel Memories API
 
 This is the api of a mini project whereby users can create memories which come with chat rooms where they can have discussions and suggestions from others about other travel ideas.
 
