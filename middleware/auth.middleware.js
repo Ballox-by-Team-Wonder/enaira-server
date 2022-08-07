@@ -8,8 +8,6 @@ async function auth (req, res, next) {
         if (token) {
             const decodedData = jwt.verify(token, process.env.JWT_SIGNATURE)
             req.userID = decodedData?.id
-
-            // console.log(decodedData)
         }
 
         next()

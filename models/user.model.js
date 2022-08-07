@@ -3,14 +3,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    name: { type: String, required: true, trim: true, minlength: 3 },
+    firstName: { type: String, required: true, trim: true, minlength: 3 },
+    lastName: { type: String, required: true, trim: true, minlength: 3 },
     email: { type: String, required: true, unique: true},
-    imageUrl: { type: String },
-    password: { type: String },
-    memories: [{
-        type: Schema.Types.ObjectId,
-        ref: "Memory"
-    }],
+    password: { type: String }
 }, {
     timestamps: true,
 })
