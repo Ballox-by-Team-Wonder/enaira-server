@@ -72,10 +72,24 @@ async function updateUser(req, res) {
     }
 }
 
+async function incrementUserPoints(req, res) {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            req.userID, 
+            { $inc: { points: 1 } },
+            { new: true }
+        )
+        res.status(200).json(updatedUser)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 
 module.exports = {
     signup,
     login,
     getLoggedInUser,
-    updateUser
+    updateUser,
+    incrementUserPoints
 }
